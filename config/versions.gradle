@@ -1,0 +1,23 @@
+ext {
+    globalCompileSdkVersion = 28
+    globalMinSdkVersion = 21
+    globalTargetVersion = 28
+
+    kotlin = '1.2.51'
+    moxy = "1.5.3"
+    requery = "1.3.2"
+    support = "25.4.0"
+    constraintLayout = "1.0.2"
+    rxjava = "2.2.1"
+    rxkotlin = "2.2.0"
+    rxandroid = "2.1.0"
+    rxbinding = "2.1.1"
+    rxadapters = "2.4.0"
+    rxrelay = "2.0.0"
+    dagger2 = "2.16"
+    retrofit = "2.2.0"
+    timber = "4.7.0"
+    okhttp = "3.4.1"
+    adapterDelegates = "3.0.1"
+    glide = "4.8.0"
+}

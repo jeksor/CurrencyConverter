@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- TODO replace with your development base url -->
+	<string name="base_api_url">https://revolut.duckdns.org/</string>
+</resources>

@@ -1,0 +1,122 @@
+import com.android.builder.core.BuilderConstants
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion globalCompileSdkVersion
+
+    defaultConfig {
+        applicationId "com.esorokin.currencyconverter"
+        minSdkVersion globalMinSdkVersion
+        targetSdkVersion globalTargetVersion
+        versionCode 1
+        versionName "1.0"
+
+        buildConfigField "boolean", "IS_TURN_LOGS", buildServerEnable.toBoolean() ? buildServerLogs.toBoolean() : "true"
+        manifestPlaceholders = [applicationLabel: "Currency converter"]
+    }
+
+    signingConfigs {
+        // you must set up an environment var before release signing
+        // run: export APP_KEY={password}
+        // TODO add your release keystore in /keystore folder
+        release {
+            storeFile file('../keystore/release.keystore')
+            keyAlias 'alias'
+            storePassword "$System.env.APP_KEY"
+            keyPassword "$System.env.APP_KEY"
+        }
+
+        debug {
+            storeFile file('../keystore/debug.keystore')
+            keyAlias 'androiddebugkey'
+            storePassword 'android'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        prod {
+            signingConfig signingConfigs.release
+            minifyEnabled buildServerEnable.toBoolean()
+            debuggable !buildServerEnable.toBoolean()
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            proguardFiles file('../config/proguard').listFiles()
+
+            manifestPlaceholders = [applicationLabelSuffix: ""]
+        }
+
+        dev {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            debuggable true
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            proguardFiles file('../config/proguard').listFiles()
+
+            manifestPlaceholders = [applicationLabelSuffix: " dev"]
+            applicationIdSuffix ".dev"
+            versionNameSuffix " Dev"
+        }
+    }
+
+    //allow to use custom build type like {dev, stage, prod}
+    android.variantFilter { variant ->
+        def build = variant.buildType.name
+        if (build == BuilderConstants.DEBUG || build == BuilderConstants.RELEASE) {
+            variant.setIgnore(true)
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin"
+
+    //di
+    implementation "com.google.dagger:dagger:$dagger2"
+    kapt "com.google.dagger:dagger-compiler:$dagger2"
+
+    //support libraries
+    implementation "com.android.support:appcompat-v7:$support"
+    implementation "com.android.support:design:$support"
+    implementation "com.android.support:recyclerview-v7:$support"
+
+    //ui
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayout"
+
+    //network
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp"
+
+    //db
+    implementation "io.requery:requery:$requery"
+    implementation "io.requery:requery-android:$requery"
+    implementation "io.requery:requery-kotlin:$requery"
+    kapt "io.requery:requery-processor:$requery"
+
+    //rx
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rxadapters"
+    implementation "com.jakewharton.rxrelay2:rxrelay:$rxrelay"
+
+    //mvp
+    implementation "com.arello-mobile:moxy:$moxy"
+    implementation "com.arello-mobile:moxy-app-compat:$moxy"
+    kapt "com.arello-mobile:moxy-compiler:$moxy"
+
+    //utils
+    implementation "com.jakewharton.timber:timber:$timber"
+    implementation "com.hannesdorfmann:adapterdelegates3:$adapterDelegates"
+
+    implementation "com.github.bumptech.glide:glide:$glide"
+    kapt "com.github.bumptech.glide:compiler:$glide"
+    implementation "com.github.bumptech.glide:okhttp3-integration:$glide"
+}
